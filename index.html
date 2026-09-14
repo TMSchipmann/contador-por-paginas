@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2695ed">
+    <meta name="description" content="Contador por páginas, configurable y sin límite artificial. Guarda tu avance en este navegador.">
+    <title>Contador por páginas</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232995ed'/%3E%3Ccircle cx='32' cy='32' r='21' fill='none' stroke='white' stroke-width='5'/%3E%3Cpath d='M32 22v20M22 32h20' stroke='white' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="style.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <div class="eyebrow"><span class="status-dot" aria-hidden="true"></span> CONTADOR PERSONAL</div>
+
+      <section class="panel setup-panel" id="setup-screen" aria-labelledby="setup-title">
+        <div class="panel-topline"></div>
+        <div class="setup-inner">
+          <div class="setup-heading">
+            <div class="brand-icon" aria-hidden="true">◉</div>
+            <div>
+              <p class="kicker">PREPARAR SESIÓN</p>
+              <h1 id="setup-title">Tu contador, a tu manera.</h1>
+              <p class="intro">Configura las páginas antes de empezar. Tu avance se guarda en este navegador.</p>
+            </div>
+          </div>
+
+          <div class="continue-card" id="continue-card" hidden>
+            <div>
+              <strong>Hay una sesión guardada</strong>
+              <span id="saved-summary"></span>
+            </div>
+            <button class="button button-primary button-small" id="continue-button" type="button">Continuar <span aria-hidden="true">→</span></button>
+          </div>
+
+          <form id="setup-form" novalidate>
+            <div class="form-grid">
+              <label class="field">
+                <span>Cantidad de páginas</span>
+                <input id="pages-input" name="pages" type="text" inputmode="numeric" pattern="[0-9]+" value="50" autocomplete="off" required>
+                <small>Sin límite programado; las páginas se crean al visitarlas.</small>
+              </label>
+              <label class="field">
+                <span>Valor inicial</span>
+                <input id="initial-input" name="initial" type="text" inputmode="numeric" value="0" autocomplete="off" required>
+                <small>Puede ser positivo, cero o negativo.</small>
+              </label>
+              <label class="field">
+                <span>Cambio por toque</span>
+                <input id="step-input" name="step" type="text" inputmode="numeric" value="1" autocomplete="off" required>
+                <small>Cuánto cambia el valor con cada toque.</small>
+              </label>
+              <label class="field">
+                <span>Meta de toques por página</span>
+                <input id="goal-input" name="goal" type="text" inputmode="numeric" value="50" autocomplete="off" required>
+                <small>Se usa para calcular el anillo de progreso.</small>
+              </label>
+            </div>
+
+            <fieldset class="choice-group">
+              <legend>Dirección del botón principal</legend>
+              <div class="segmented">
+                <label><input type="radio" name="direction" value="up" checked><span><b>＋</b> Aumentar</span></label>
+                <label><input type="radio" name="direction" value="down"><span><b>−</b> Retroceder</span></label>
+              </div>
+            </fieldset>
+
+            <fieldset class="color-group">
+              <legend>Color principal</legend>
+              <div class="color-options" id="color-options">
+                <label class="color-choice" style="--swatch:#2995ed"><input type="radio" name="color-preset" value="#2995ed" checked><span class="sr-only">Azul</span></label>
+                <label class="color-choice" style="--swatch:#20a88c"><input type="radio" name="color-preset" value="#20a88c"><span class="sr-only">Verde</span></label>
+                <label class="color-choice" style="--swatch:#ef6a5b"><input type="radio" name="color-preset" value="#ef6a5b"><span class="sr-only">Coral</span></label>
+                <label class="color-choice" style="--swatch:#e6a42d"><input type="radio" name="color-preset" value="#e6a42d"><span class="sr-only">Ámbar</span></label>
+                <label class="color-choice" style="--swatch:#8d72d9"><input type="radio" name="color-preset" value="#8d72d9"><span class="sr-only">Violeta</span></label>
+                <label class="color-choice" style="--swatch:#313c51"><input type="radio" name="color-preset" value="#313c51"><span class="sr-only">Gris oscuro</span></label>
+                <label class="custom-color" title="Elegir otro color"><input id="custom-color-input" type="color" value="#2995ed" aria-label="Elegir color personalizado"><span aria-hidden="true">＋</span></label>
+              </div>
+            </fieldset>
+
+            <div class="switch-list">
+              <label class="switch-row"><span>Mostrar número de página</span><input id="show-page-input" type="checkbox" checked><span class="switch-ui" aria-hidden="true"></span></label>
+              <label class="switch-row"><span>Confirmar antes de reiniciar</span><input id="confirm-reset-input" type="checkbox" checked><span class="switch-ui" aria-hidden="true"></span></label>
+            </div>
+
+            <p class="form-error" id="form-error" role="alert" hidden></p>
+            <button class="button button-primary start-button" type="submit">Comenzar <span aria-hidden="true">→</span></button>
+          </form>
+        </div>
+      </section>
+
+      <section class="panel counter-panel" id="counter-screen" aria-labelledby="counter-title" hidden>
+        <div class="panel-topline"></div>
+        <div class="counter-inner">
+          <header class="counter-header">
+            <div class="counter-title-group">
+              <span class="brand-icon small" aria-hidden="true">◉</span>
+              <div>
+                <p class="kicker">SESIÓN EN CURSO</p>
+                <h1 id="counter-title">Mi contador</h1>
+              </div>
+            </div>
+            <button class="icon-text-button" id="new-session-button" type="button" title="Preparar una nueva sesión">Nueva sesión</button>
+          </header>
+
+          <div class="counter-content">
+            <div class="page-label" id="page-label">PÁGINA <span id="page-top-number">1 DE 50</span></div>
+            <button class="count-circle" id="count-circle" type="button" aria-label="Avanzar el contador">
+              <span class="circle-inner">
+                <span class="current-value" id="current-value">0</span>
+                <span class="circle-caption" id="circle-caption">TOCA PARA CONTAR</span>
+              </span>
+            </button>
+            <div class="progress-text" id="progress-text">50 toques restantes</div>
+            <div class="progress-detail" id="progress-detail">0 / 50 toques</div>
+            <div class="count-actions">
+              <button class="secondary-count" id="secondary-button" type="button" aria-label="Contar en dirección contraria">−</button>
+              <button class="primary-count" id="primary-button" type="button" aria-label="Avanzar el contador">＋ <span id="primary-step-label">1</span></button>
+            </div>
+          </div>
+
+          <div class="utility-actions">
+            <button class="button button-muted" id="undo-button" type="button">↶ <span>Deshacer</span></button>
+            <span class="divider" aria-hidden="true"></span>
+            <button class="button button-muted" id="reset-button" type="button">◇ <span>Reiniciar</span></button>
+          </div>
+
+          <nav class="page-navigation" aria-label="Navegación entre páginas">
+            <button class="nav-arrow" id="previous-button" type="button" aria-label="Página anterior">←</button>
+            <div class="page-navigation-center">
+              <span id="page-navigation-label">Página 1 de 50</span>
+              <button class="jump-link" id="jump-button" type="button">Ir a página</button>
+            </div>
+            <button class="nav-arrow" id="next-button" type="button" aria-label="Página siguiente">→</button>
+          </nav>
+        </div>
+      </section>
+      <p class="keyboard-hint" id="keyboard-hint" hidden>Toque el círculo o use <kbd>+</kbd> / <kbd>espacio</kbd> para contar · <kbd>−</kbd> para el sentido contrario · <kbd>←</kbd> <kbd>→</kbd> para cambiar de página</p>
+      <p class="save-status" id="save-status" role="status" aria-live="polite"></p>
+    </main>
+
+    <dialog id="jump-dialog" aria-labelledby="jump-title">
+      <form id="jump-form" class="dialog-content" novalidate>
+        <h2 id="jump-title">Ir a una página</h2>
+        <label class="field"><span>Número de página</span><input id="jump-input" type="text" inputmode="numeric" autocomplete="off" required></label>
+        <p class="form-error" id="jump-error" role="alert" hidden></p>
+        <div class="dialog-actions"><button class="button button-muted" id="cancel-jump" type="button">Cancelar</button><button class="button button-primary" type="submit">Ir</button></div>
+      </form>
+    </dialog>
+  </body>
+</html>
