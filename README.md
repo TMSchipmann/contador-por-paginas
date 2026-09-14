@@ -12,7 +12,7 @@ También puedes colocar los archivos en una carpeta `docs` y elegir `/docs` en P
 
 ## Uso
 
-Configura la cantidad de páginas, valor inicial, dirección, paso, meta de toques y color antes de comenzar. Cada página es un contador independiente. Su valor inicial se calcula así: `valor inicial ± (número de página − 1) × paso`. Por ejemplo, con 150 páginas, inicio 150, paso 1 y dirección descendente, las páginas 1, 2 y 3 parten en 150, 149 y 148.
+Configura la cantidad de páginas, valor inicial, dirección, paso, meta de toques y color antes de comenzar. Al elegir **Retroceder**, el valor inicial predeterminado pasa a ser la cantidad de páginas: con 50 páginas, la primera parte en 50 y la siguiente en 49. Puedes escribir otro valor inicial si lo prefieres. Cada página es un contador independiente. Su valor inicial se calcula así: `valor inicial ± (número de página − 1) × paso`. Por ejemplo, con 150 páginas, inicio 150, paso 1 y dirección descendente, las páginas 1, 2 y 3 parten en 150, 149 y 148.
 
 El botón grande y el círculo cuentan en la dirección seleccionada. El botón pequeño cuenta en sentido contrario. La meta de toques controla el anillo de progreso de **cada página** y no detiene el conteo al llegar a ella. `Deshacer` revierte el último cambio de la página actual, incluido un reinicio. `Reiniciar` vuelve al valor inicial de esa página.
 

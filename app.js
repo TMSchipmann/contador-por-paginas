@@ -21,6 +21,7 @@
 
   let session = loadSession();
   let selectedColor = "#2995ed";
+  let automaticInitial = true;
   const formatter = new Intl.NumberFormat("es-CL");
 
   function integer(text, allowNegative) {
@@ -214,6 +215,19 @@
     saveSession();
     showCounter();
   }
+
+  function updateAutomaticInitial() {
+    if (!automaticInitial) return;
+    const direction = el.form.querySelector('input[name="direction"]:checked').value;
+    const pages = integer(el.pages.value, false);
+    el.initial.value = direction === "down" && pages !== null && pages > 0n ? pages.toString() : "0";
+  }
+
+  el.initial.addEventListener("input", () => { automaticInitial = false; });
+  el.pages.addEventListener("input", updateAutomaticInitial);
+  el.form.querySelectorAll('input[name="direction"]').forEach((input) => {
+    input.addEventListener("change", updateAutomaticInitial);
+  });
 
   document.querySelectorAll('input[name="color-preset"]').forEach((input) => {
     input.addEventListener("change", () => {
